@@ -2,6 +2,8 @@
 <html>
     <head>
         <meta something="https://xd.adobe.com/view/8e7553b8-603a-458c-8afb-35dd6705bb8f-db26/" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <style>
             :root {
                 --primary1: #7c1524;
@@ -54,14 +56,75 @@
                 }
             }
         </style>
+        <script>
+            function sendForm() {
+                let account_types = document.getElementsByName('account_type');
+                let account_type;
+                for (var i = 0; i < account_types.length; i++) {
+                    const el = account_types[i];
+                    if (el.checked) {
+                        account_type = el.value;
+                    }
+                }
+
+                const first_name = document.getElementById('first-name').value;
+                const last_name = document.getElementById('last-name').value;
+                const co = document.getElementById('co').value;
+                const street = document.getElementById('street').value;
+                const housenum = document.getElementById('housenum').value;
+                const plz = document.getElementById('plz').value;
+                const city = document.getElementById('city').value;
+                const email = document.getElementById('email').value;
+                const telefon = document.getElementById('telefon').value;
+                const beitragEl = document.getElementById('beitrag');
+                let beitrag;
+                if (document.getElementById('beitragRadio1').checked) {
+                    beitrag = 10;
+                } else if (document.getElementById('beitragRadio2').checked) {
+                    beitrag = 5;
+                } else if (document.getElementById('beitragRadio3').checked) {
+                    beitrag = parseInt(beitragEl.value);
+                    if (isNaN(beitrag)){
+                        // Error
+                        beitragEl.style.border = '1px solid red';
+                        return;
+                    }
+                } else {
+                    // Error
+                    beitragEl.style.border = '1px solid red';
+                    return;
+                }
+
+
+                fetch('send_mail', {
+                    method: "POST",
+                    body: JSON.stringify({
+                        account_type,
+                        first_name,
+                        last_name,
+                        co,
+                        street,
+                        housenum,
+                        plz,
+                        city,
+                        email,
+                        telefon,
+                        beitrag,
+                    }),
+                    headers: { "Content-Type": "application/json" },
+                }).then(e => e.json()).then(console.log).then(() => {
+                    var confirmModal = new bootstrap.Modal(document.getElementById('finished'), {
+                        keyboard: false
+                    });
+                    confirmModal.show();
+                })
+            }
+        </script>
         <title>عزوة</title>
     </head>
     <body>
         <header>
-            <img src="logo.png" width="40rem" height="100%" />
-            <div>
-                PALESTINE LEGAL FUND
-            </div>
+            <img src="logo-header-white.svg" style="width:10rem" />
         </header>
         <div class="secondary-header">3EZWA عزوة</div>
         <p>
@@ -73,7 +136,124 @@
             and solidarity, where the individial finds reassurance in knowing they are not alone.
         </p>
         <div class="button-container">
-            <button>BECOME A MEMBER</button>
+            <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">BECOME A MEMBER</button>
         </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLabel">Online Beitrittsformular</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST">
+            <div style="display: flex; justify-content: space-between;">
+                    <div class="form-check">
+                    <input class="form-check-input" type="radio" name="account_type" id="account_type1" value="supporter" checked>
+                    <label class="form-check-label" for="account_type1">
+                        Fördermitglied
+                    </label>
+                    </div>
+                    <div class="form-check">
+                    <input class="form-check-input" type="radio" name="account_type" id="account_type2" value="regular">
+                    <label class="form-check-label" for="account_type2">
+                        Aktive Mitglied
+                    </label>
+                    </div>
+            </div>
+            <div style="display: grid;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div class="mb-3">
+                        <label for="first-name" class="form-label">Vorname</label>
+                        <input type="text" class="form-control" id="first-name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="last-name" class="form-label">Nachname</label>
+                        <input type="text" class="form-control" id="last-name">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="co" class="form-label">C/O</label>
+                    <input type="text" class="form-control" id="co">
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <div class="mb-3">
+                        <label for="street" class="form-label">Straße</label>
+                        <input type="text" class="form-control" id="street">
+                    </div>
+                    <div class="mb-3">
+                        <label for="housenum" class="form-label">Haus-Nr</label>
+                        <input type="text" class="form-control" id="housenum">
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <div class="mb-3">
+                        <label for="plz" class="form-label">PLZ</label>
+                        <input type="text" class="form-control" id="plz">
+                    </div>
+                    <div class="mb-3">
+                        <label for="city" class="form-label">Stadt</label>
+                        <input type="text" class="form-control" id="city">
+                    </div>
+                </div>
+                <h5 class="modal-title" id="exampleModalLabel">Deine Kontaktdaten</h5>
+                <div style="display: flex; justify-content: space-between;">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefon" class="form-label">Telefonnummer</label>
+                        <input type="text" class="form-control" id="telefon">
+                    </div>
+                </div>
+                <h5 class="modal-title" id="exampleModalLabel">Dein Mitgliedbeitrag</h5>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="beitragRadio" id="beitragRadio1" checked>
+                    <label class="form-check-label" for="beitragRadio1">
+                        Regulrärer Betrag 10€
+                    </label>
+                    </div>
+                    <div class="form-check">
+                    <input class="form-check-input" type="radio" name="beitragRadio" id="beitragRadio2">
+                    <label class="form-check-label" for="beitragRadio2">
+                        Ermäßigter Betrag 5€
+                    </label>
+                   </div>
+                   <div class="form-check">
+                    <input class="form-check-input" type="radio" name="beitragRadio" id="beitragRadio3">
+                    <label class="form-check-label" for="beitragRadio3" style="display:flex;gap:1rem;">
+                        Anderer Betrag
+                        <input type="text" class="form-control" id="beitrag" style="width:6rem;"> €
+                    </label>
+                   </div>
+
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="sendForm();" data-bs-dismiss="modal">Apply</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="finished" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exampleModalLabel">Your information has been recieved</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Thank you for your support!
+            </div>
+        </div>
+    </div>
+</div>
+
     </body>
 </html>
